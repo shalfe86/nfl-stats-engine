@@ -1,4 +1,4 @@
-nfl_data_py==2.2.0
+nfl_data_py
 pandas
 numpy
 firebase-admin
