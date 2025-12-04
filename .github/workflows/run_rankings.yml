@@ -1,0 +1,31 @@
+name: Update NFL Rankings
+
+on:
+  schedule:
+    - cron: '0 8 * * 2' # Runs every Tuesday at 8AM
+  workflow_dispatch:      # Allows manual button click
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Create Service Account Key
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
+
+      - name: Run Rankings Engine
+        run: python rankings_engine.py
+4.  Click **Commit changes**.
