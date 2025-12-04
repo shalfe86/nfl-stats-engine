@@ -18,17 +18,44 @@ jobs:
         with:
           python-version: '3.9'
 
+      # DEBUG STEP 1: Ensure requirements.txt exists
+      - name: Check and Create Requirements
+        run: |
+          if [ ! -f requirements.txt ]; then
+            echo "requirements.txt not found. Creating default..."
+            # FIXED: Removed specific version number to fetch latest available
+            echo "nfl_data_py" >> requirements.txt
+            echo "pandas" >> requirements.txt
+            echo "numpy" >> requirements.txt
+            echo "firebase-admin" >> requirements.txt
+          fi
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
+      # DEBUG STEP 2: Create Key and Verify it is not empty
       - name: Create Service Account Key
         env:
-          # We load the secret into an environment variable first
-          # This prevents syntax errors from special characters in the JSON key
           FIREBASE_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_KEY" > serviceAccountKey.json
+          if [ ! -s serviceAccountKey.json ]; then
+            echo "Error: serviceAccountKey.json is empty!"
+            echo "Please go to Settings > Secrets and variables > Actions and add 'FIREBASE_SERVICE_ACCOUNT'."
+            exit 1
+          else
+            echo "Success: Service Account Key created."
+          fi
+
+      # DEBUG STEP 3: Verify Python script exists
+      - name: Check for Script
+        run: |
+          ls -R
+          if [ ! -f rankings_engine.py ]; then
+            echo "Error: rankings_engine.py not found!"
+            exit 1
+          fi
 
       - name: Run Rankings Engine
         run: python rankings_engine.py
