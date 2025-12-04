@@ -1,0 +1,4 @@
+nfl_data_py==2.2.0
+pandas
+numpy
+firebase-admin
