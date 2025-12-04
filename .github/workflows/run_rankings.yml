@@ -2,7 +2,7 @@ name: Update NFL Rankings
 
 on:
   schedule:
-    - cron: '0 8 * * 2' # Runs every Tuesday at 8AM
+    - cron: '0 8 * * 2' # Runs every Tuesday at 8AM UTC
   workflow_dispatch:      # Allows manual button click
 
 jobs:
@@ -23,9 +23,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create Service Account Key
+        env:
+          # We load the secret into an environment variable first
+          # This prevents syntax errors from special characters in the JSON key
+          FIREBASE_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
+          echo "$FIREBASE_KEY" > serviceAccountKey.json
 
       - name: Run Rankings Engine
         run: python rankings_engine.py
-4.  Click **Commit changes**.
